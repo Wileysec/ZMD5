@@ -1,0 +1,73 @@
+{include file="./index/header"}
+<body>
+    <div class="container">
+        <p class="text-center text-info title">MD5明密文在线查询~</p>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <form>
+                    <div class="input-group">
+                        <input type="text" class="form-control" aria-describedby="button-addon4" name="hash">
+                        <div class="input-group-append" id="button-addon4">
+                            <input class="btn btn-info" type="submit" value="查 询" id="submit">
+                        </div>
+                    </div>
+                </form>
+                <div class="card">
+                    <div class="card-body show">
+                        <span>你问我查询到的几率？看你的运气喽~</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <footer>
+            <p class="footer">© 2019 ZMD5 All Rights Reserved. <a href="/submit">提交明密文</a></p>
+        </footer>
+    </div>
+</body>
+<script>
+    $("#submit").click(function(event){
+        var formData = $("form").serialize();
+        event.preventDefault();
+        hash = $("input[name=hash]").val();
+        if(hash == ''){
+            layer.msg("Hash值不能为空！");
+
+            return false;
+        }
+        $.ajax({
+            type:"post",
+            url:"{:url('/index/index/select')}",
+            data:formData,
+            success:function(data){
+
+                var jsonObj = eval("(" + data + ")");
+
+                if(jsonObj.code == 2){
+                    layer.msg(jsonObj.message);
+
+                    return false;
+                }
+
+                if(jsonObj.code == 0){
+                    text = "<span class='text-success'>" + jsonObj.plaintext + "</span>";
+
+                    $(".show").html(text);
+
+                    return false;
+                }
+
+                if(jsonObj.code == 1){
+                    text = "<span class='text-danger'>" + jsonObj.message + "</span>";
+
+                    $(".show").html(text);
+
+                    return false;
+                }
+
+            }
+        });
+    });
+</script>
+</html>

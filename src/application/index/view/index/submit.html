@@ -1,0 +1,68 @@
+{include file="./index/header"}
+<body>
+    <div class="container">
+        <p class="text-center title-sub">批量提交明密文，<span class="text-danger">一行一对明密文</span>，最多批量提交<span class="text-danger">100</span>行，格式：<span class="text-danger">密文:明文</span> (暂时只支持MD5)</p>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <form>
+                    <div class="form-group">
+                        <textarea name="hash" id="hash" cols="100" rows="10" class="form-control" autofocus></textarea>
+                    </div>
+                    <span>当前行数：<span id="lines" class="text-danger">1</span></span>
+                    <input class="btn btn-info float-right" type="submit" value="提 交" id="submit">
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <footer>
+            <p class="footer">© 2019 ZMD5 All Rights Reserved. <a href="/submit">提交明密文</a></p>
+        </footer>
+    </div>
+</body>
+<script>
+    function onGetLines() {
+        var tmp = document.querySelector('#hash').value;
+        if(tmp != ''){
+            var lines = tmp.split(/\r*\n/);
+
+            var linesCount = lines.length - (navigator.userAgent.indexOf('MSIE') !== -1);
+            $('#lines').html(linesCount);
+        }else{
+            $('#lines').html(0);
+        }
+    }
+
+    document.querySelector('#hash').addEventListener('blur', onGetLines, false);
+
+    $("#submit").click(function(event){
+        var formData = $("form").serialize();
+        event.preventDefault();
+        hash = $("textarea[name=hash]").val();
+        if(hash == ''){
+            layer.msg("Hash值不能为空！");
+
+            return false;
+        }
+
+        $.ajax({
+            type:"post",
+            url:"{:url('/index/index/hashSub')}",
+            data:formData,
+            success:function(data){
+                var jsonObj = eval("(" + data + ")");
+
+                if(jsonObj.code){
+                    layer.msg(jsonObj.message);
+
+                    return false;
+                }else{
+                    layer.msg(jsonObj.message);
+
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+</html>
